@@ -70,6 +70,7 @@ def setup():
 def get_vms():
     global config
     global vms
+    global vm_names
 
     # fullscreen + clear screen
     Controller().press(Key.f11)
