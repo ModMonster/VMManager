@@ -119,6 +119,7 @@ def draw():
     global scroll_buffer
     global scroll_pos
     global vm_display_count
+    global selected_vm
 
     vm_display_count = math.floor(os.get_terminal_size().columns / 27) - 1 # refresh display count
 
@@ -132,7 +133,10 @@ def draw():
     if (len(vm_display_names) > 0):
         # print newlines until halfway down
         center_line = int(os.get_terminal_size().lines / 2 - 9)
-        print('\n'*center_line)
+
+        print('\n'*math.ceil((center_line / 3) * 2))
+        print(f"{selected_vm + 1} / {len(vm_display_names)}".center(width))
+        print('\n'*math.floor(center_line / 3 - 1))
 
         # make array of boxes
         vm_boxes = []
