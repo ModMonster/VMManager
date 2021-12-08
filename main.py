@@ -39,6 +39,12 @@ manager_window = win32gui.GetForegroundWindow()
 
 # functions
 
+def print_scroll_bar(progress, total):
+    size_l = ((os.get_terminal_size().columns / total) * progress) - 10
+    size_r = (os.get_terminal_size().columns - size_l) - 11
+
+    print("-" * math.floor(size_l) + "██████████" + "-" * math.floor(size_r))
+
 def setup():
     config_file = open(os.path.dirname(__file__) + "\\vmmanager.cfg", "w")
 
@@ -167,6 +173,11 @@ def draw():
     # print it
     for l in zip(*boxes_split):
         print(*l)
+
+    # scroll bar
+    print("\n" * math.floor(center_line - 1))
+
+    print_scroll_bar(selected_vm + 1, len(vms))
 
 def load_config():
     global config
