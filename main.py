@@ -4,11 +4,6 @@ from time import sleep
 import shutil
 import math
 
-# TODO
-# maybe print a progress bar
-# show running vm
-# better scrolling
-
 # config file layout
 # 0 - vm path
 # 1 - vmware path
