@@ -30,7 +30,7 @@ vm_names = []
 vm_display_names = []
 
 selected_vm = 0
-vm_display_count = math.floor(os.get_terminal_size().columns / 27) - 1
+vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1
 scroll_buffer = 0
 scroll_pos = 0
 
@@ -121,7 +121,7 @@ def draw():
     global vm_display_count
     global selected_vm
 
-    vm_display_count = math.floor(os.get_terminal_size().columns / 27) - 1 # refresh display count
+    vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1 # refresh display count
 
     os.system("cls")
 
