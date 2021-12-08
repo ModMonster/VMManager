@@ -129,55 +129,66 @@ def draw():
     print("")
     print("VMManager v1.0.0 by ModMonster".center(width)) # info print
 
-    # print newlines until halfway down
-    center_line = int(os.get_terminal_size().lines / 2 - 9)
-    print('\n'*center_line)
-    
-    # make array of boxes
-    vm_boxes = []
+    if (len(vm_display_names) > 0):
+        # print newlines until halfway down
+        center_line = int(os.get_terminal_size().lines / 2 - 9)
+        print('\n'*center_line)
 
-    # crop it
-    print_vms = vm_display_names[scroll_pos:vm_display_count + scroll_pos]
+        # make array of boxes
+        vm_boxes = []
 
-    # render it
-    for vm in print_vms:
-        if (vm_display_names.index(vm) == selected_vm):
-            vm_boxes.append(f"""
-        {bcolors.OKCYAN}╔════════════════════╗{bcolors.ENDC}
-        {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-        {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-        {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-        {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-        {bcolors.OKCYAN}║ {vm} ║{bcolors.ENDC}
-        {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-        {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-        {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-        {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-        {bcolors.OKCYAN}╚════════════════════╝{bcolors.ENDC}""")
-        else:
-            vm_boxes.append(f"""
-        ┌────────────────────┐
-        │                    │
-        │                    │
-        │                    │
-        │                    │
-        │ {vm} │
-        │                    │
-        │                    │
-        │                    │
-        │                    │
-        └────────────────────┘""")
+        # crop it
+        print_vms = vm_display_names[scroll_pos:vm_display_count + scroll_pos]
 
-    boxes_split = [box.splitlines() for box in vm_boxes]
+        # render it
+        for vm in print_vms:
+            if (vm_display_names.index(vm) == selected_vm):
+                vm_boxes.append(f"""
+            {bcolors.OKCYAN}╔════════════════════╗{bcolors.ENDC}
+            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
+            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
+            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
+            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
+            {bcolors.OKCYAN}║ {vm} ║{bcolors.ENDC}
+            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
+            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
+            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
+            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
+            {bcolors.OKCYAN}╚════════════════════╝{bcolors.ENDC}""")
+            else:
+                vm_boxes.append(f"""
+            ┌────────────────────┐
+            │                    │
+            │                    │
+            │                    │
+            │                    │
+            │ {vm} │
+            │                    │
+            │                    │
+            │                    │
+            │                    │
+            └────────────────────┘""")
 
-    # print it
-    for l in zip(*boxes_split):
-        print(*l)
+        boxes_split = [box.splitlines() for box in vm_boxes]
 
-    # scroll bar
-    print("\n" * math.floor(center_line - 1))
+        # print it
+        for l in zip(*boxes_split):
+            print(*l)
 
-    print_scroll_bar(selected_vm + 1, len(vms))
+        # scroll bar
+        print("\n" * math.floor(center_line - 1))
+
+        print_scroll_bar(selected_vm + 1, len(vms))
+    else:
+        # print newlines until halfway down
+        center_line = int(os.get_terminal_size().lines / 2 - 4)
+        print('\n'*center_line)
+
+        print(f"No Virtual Machines found in '{config[0]}'".center(width))
+        print(f"VMs must be made using VMWare and have a .vmx file to show here.".center(width))
+        print(f"Press Escape to quit.".center(width))
+
+        print('\n'*center_line)
 
 def load_config():
     global config
@@ -196,7 +207,7 @@ def on_press(key):
 
     # ensure manager window is focused
     if (manager_window == win32gui.GetForegroundWindow()):
-        if (key == Key.left):
+        if (key == Key.left and len(vms) > 0):
             if (selected_vm > 0):
                 selected_vm -= 1
             else:
@@ -212,7 +223,7 @@ def on_press(key):
 
             draw()
 
-        elif (key == Key.right):
+        elif (key == Key.right and len(vms) > 0):
             if (selected_vm < len(vms) - 1):
                 selected_vm += 1
             else:
@@ -228,7 +239,7 @@ def on_press(key):
 
             draw()
 
-        elif (key == Key.enter):
+        elif (key == Key.enter and len(vms) > 0):
             action = "start"
             return False
         elif (key == Key.esc):
@@ -253,18 +264,29 @@ if (not os.path.isfile(os.path.dirname(__file__) + "\\vmmanager.cfg")):
 
 load_config() # load config file and store in list
 get_vms() # get list of vms from config file
-get_vm_display_names() # get display names by adding spaces / cutting off end of vm names
-start_input() # start input listener
-draw() # draw ui once
 
-scroll_buffer = vm_display_count - 1 # setup scroll buffer
+if (len(vms) > 0):
+    get_vm_display_names() # get display names by adding spaces / cutting off end of vm names
+    start_input() # start input listener
+    draw() # draw ui once
 
-# main loop
-while True:
-    if (action == "exit"):
-        Controller().press(Key.f11)
-        break
-    elif (action == "start"):
-        start_vm()
-        break
-    sleep(1)
+    scroll_buffer = vm_display_count - 1 # setup scroll buffer
+
+    # main loop
+    while True:
+        if (action == "exit"):
+            Controller().press(Key.f11)
+            break
+        elif (action == "start"):
+            start_vm()
+            break
+        sleep(1)
+else:
+    start_input() # start input listener
+    draw() # draw ui once
+
+    while True:
+        if (action == "exit"):
+            Controller().press(Key.f11)
+            break
+        sleep(1)
