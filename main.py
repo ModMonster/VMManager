@@ -3,6 +3,7 @@ import os
 from time import sleep
 import shutil
 import math
+import win32gui
 
 # config file layout
 # 0 - vm path
@@ -30,6 +31,7 @@ vm_display_names = []
 
 selected_vm = 0
 action = ""
+manager_window = win32gui.GetForegroundWindow()
 
 # functions
 
@@ -167,27 +169,29 @@ def on_press(key):
     global selected_vm
     global vms
 
-    if (key == Key.left):
-        if (selected_vm > 0):
-            selected_vm -= 1
-        else:
-            selected_vm = len(vms) - 1
+    # ensure manager window is focused
+    if (manager_window == win32gui.GetForegroundWindow()):
+        if (key == Key.left):
+            if (selected_vm > 0):
+                selected_vm -= 1
+            else:
+                selected_vm = len(vms) - 1
 
-        draw()
-    elif (key == Key.right):
-        if (selected_vm < len(vms) - 1):
-            selected_vm += 1
-        else:
-            selected_vm = 0
+            draw()
+        elif (key == Key.right):
+            if (selected_vm < len(vms) - 1):
+                selected_vm += 1
+            else:
+                selected_vm = 0
 
-        draw()
-    elif (key == Key.enter):
-        action = "start"
-        return False
-    elif (key == Key.esc):
-        action = "exit"
-        print("Quitting...")
-        return False
+            draw()
+        elif (key == Key.enter):
+            action = "start"
+            return False
+        elif (key == Key.esc):
+            action = "exit"
+            print("Quitting...")
+            return False
 
 def start_input():
     # start keyboard listener
