@@ -30,6 +30,10 @@ vm_names = []
 vm_display_names = []
 
 selected_vm = 0
+vm_display_count = math.floor(shutil.get_terminal_size().columns / 27) - 1
+scroll_buffer = vm_display_count - 1
+scroll_pos = 0
+
 action = ""
 manager_window = win32gui.GetForegroundWindow()
 
@@ -105,6 +109,10 @@ def get_vm_display_names():
 
 def draw():
     global vm_display_names
+    global scroll_buffer
+    global scroll_pos
+    global vm_display_count
+
     os.system("cls")
 
     width = os.get_terminal_size().columns # get terminal width
@@ -120,7 +128,7 @@ def draw():
     vm_boxes = []
 
     # crop it
-    print_vms = vm_display_names[selected_vm:math.floor(shutil.get_terminal_size().columns / 27) - 1 + selected_vm]
+    print_vms = vm_display_names[scroll_pos:vm_display_count + scroll_pos]
 
     # render it
     for vm in print_vms:
@@ -168,6 +176,9 @@ def on_press(key):
     global action
     global selected_vm
     global vms
+    global vm_display_count
+    global scroll_buffer
+    global scroll_pos
 
     # ensure manager window is focused
     if (manager_window == win32gui.GetForegroundWindow()):
@@ -176,15 +187,33 @@ def on_press(key):
                 selected_vm -= 1
             else:
                 selected_vm = len(vms) - 1
+                scroll_buffer = -1
+                scroll_pos = len(vms) - vm_display_count
+
+            scroll_buffer += 1
+            # manage scrolling
+            if (scroll_buffer > vm_display_count - 1):
+                scroll_pos -= 1
+                scroll_buffer -= 1
 
             draw()
+
         elif (key == Key.right):
             if (selected_vm < len(vms) - 1):
                 selected_vm += 1
             else:
                 selected_vm = 0
+                scroll_buffer = vm_display_count
+                scroll_pos = 0
+
+            scroll_buffer -= 1
+            # manage scrolling
+            if (scroll_buffer < 0):
+                scroll_pos += 1
+                scroll_buffer += 1
 
             draw()
+
         elif (key == Key.enter):
             action = "start"
             return False
