@@ -201,6 +201,12 @@ def load_config():
     config = config_file.read().splitlines()
     config_file.close()
 
+def validate_config():
+    if (not os.path.isfile(os.path.dirname(__file__) + "\\vmmanager.cfg") or len(config) != 2 or not os.path.isdir(config[0]) or not os.path.isdir(config[1])):
+        print("Invalid configuration file.")
+        return True
+    return False
+
 def on_press(key):
     global action
     global selected_vm
@@ -263,10 +269,13 @@ def start_vm():
 
 # start of actual code
 
-if (not os.path.isfile(os.path.dirname(__file__) + "\\vmmanager.cfg")):
-    setup()
-
 load_config() # load config file and store in list
+
+# validate config file
+while validate_config():
+    setup()
+    load_config()
+
 get_vms() # get list of vms from config file
 
 if (len(vms) > 0):
