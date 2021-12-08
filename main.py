@@ -39,7 +39,7 @@ action = ""
 # functions
 
 def setup():
-    config_file = open("vmmanager.cfg", "w")
+    config_file = open(os.path.dirname(__file__) + "\\vmmanager.cfg", "w")
 
     # vm directory
     vm_dir = ""
@@ -163,7 +163,7 @@ def draw():
 def load_config():
     global config
 
-    config_file = open("vmmanager.cfg", "r")
+    config_file = open(os.path.dirname(__file__) + "\\vmmanager.cfg", "r")
     config = config_file.read().splitlines()
     config_file.close()
 
@@ -206,7 +206,7 @@ def start_vm():
 
 # start of actual code
 
-if (not os.path.isfile("vmmanager.cfg")):
+if (not os.path.isfile(os.path.dirname(__file__) + "\\vmmanager.cfg")):
     setup()
 
 load_config() # load config file and store in list
