@@ -1,7 +1,7 @@
 from pynput.keyboard import Key, Listener, Controller
 import os
 from time import sleep
-import shutil
+import os
 import math
 import win32gui
 
@@ -30,8 +30,8 @@ vm_names = []
 vm_display_names = []
 
 selected_vm = 0
-vm_display_count = math.floor(shutil.get_terminal_size().columns / 27) - 1
-scroll_buffer = vm_display_count - 1
+vm_display_count = math.floor(os.get_terminal_size().columns / 27) - 1
+scroll_buffer = 0
 scroll_pos = 0
 
 action = ""
@@ -113,6 +113,8 @@ def draw():
     global scroll_pos
     global vm_display_count
 
+    vm_display_count = math.floor(os.get_terminal_size().columns / 27) - 1 # refresh display count
+
     os.system("cls")
 
     width = os.get_terminal_size().columns # get terminal width
@@ -121,7 +123,7 @@ def draw():
     print("VMManager v1.0.0 by ModMonster".center(width)) # info print
 
     # print newlines until halfway down
-    center_line = int(shutil.get_terminal_size().lines / 2 - 9)
+    center_line = int(os.get_terminal_size().lines / 2 - 9)
     print('\n'*center_line)
     
     # make array of boxes
@@ -242,6 +244,8 @@ get_vms() # get list of vms from config file
 get_vm_display_names() # get display names by adding spaces / cutting off end of vm names
 start_input() # start input listener
 draw() # draw ui once
+
+scroll_buffer = vm_display_count - 1 # setup scroll buffer
 
 # main loop
 while True:
