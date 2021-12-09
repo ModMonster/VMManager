@@ -1,4 +1,12 @@
-from pynput.keyboard import Key, KeyCode, Listener, Controller
+import os
+import subprocess
+import sys
+import itertools
+import time
+import threading
+
+# program
+program = r'''from pynput.keyboard import Key, KeyCode, Listener, Controller
 import os
 from time import sleep
 import math
@@ -338,4 +346,96 @@ else:
         if (action == "exit"):
             Controller().press(Key.f11)
             break
-        sleep(1)
+        sleep(1)'''
+
+# vars
+
+dependencies = [
+    "pynput",
+    "pywin32",
+    "dadjokes",
+    "alive-progress",
+]
+log_file = open("VMManagerInstaller.log", "w")
+
+install_dir = ""
+done = False
+progress = ""
+
+# functions
+
+def install_dependencies():
+    global log_file
+    global progress
+    global done
+
+    print("Installing dependencies...")
+
+    # start loading thread
+    t = threading.Thread(target=animate)
+    t.daemon = True
+    t.start()
+
+    # install dependencies
+    i = 0
+    for dependency in dependencies:
+        i += 1 # increment progress
+        progress = f"{i} / {len(dependencies)}" # update progress variable
+        subprocess.run(f"pip install {dependency}", stdin=log_file, stdout=log_file, stderr=log_file) # run pip
+
+    done = True
+
+def install_vmmanager():
+    global done
+    global program
+    global install_dir
+    global progress
+
+    print("Installing VMManager...")
+
+    progress = "Moving main.py file"
+
+    # start loading thread
+    t = threading.Thread(target=animate)
+    t.daemon = True
+    t.start()
+
+    # install
+    program_file = open(install_dir + "\\main.py", "w", encoding="utf-8")
+    program_file.write(program)
+    program_file.close()
+    
+    done = True
+
+def animate():
+    global done
+    global progress
+
+    for c in itertools.cycle(["|", "/", "-", "\\"]):
+        if done:
+            break
+        sys.stdout.write(f"\r{progress} {c}")
+        sys.stdout.flush()
+        time.sleep(0.1)
+
+# code
+
+print("Welcome to the installer for VMManager v1.0.0!")
+
+while not os.path.isdir(install_dir):
+    if (install_dir != ""):
+        print("Invalid directory, please try again.")
+
+    print("Type the path to where you want VMManager to be installed.")
+    install_dir = input("> ")
+
+install_dependencies()
+
+print("\n")
+log_file.close()
+done = False
+
+install_vmmanager()
+
+print("\n\nInstallation complete, press enter to exit.")
+input("")
