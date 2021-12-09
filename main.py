@@ -5,6 +5,8 @@ import os
 import math
 import win32gui
 from dadjokes import Dadjoke
+import random
+from alive_progress import alive_bar
 
 # config file layout
 # 0 - vm path
@@ -90,21 +92,23 @@ def get_vms():
 
     vm_folders = os.listdir(config[0])
 
-    print(f"Found {len(vm_folders)} folders...")
+    print(f"Scanning {len(vm_folders)} folders...")
 
     # get vmx files from folders
-    for folder in vm_folders:
-        path = config[0] + "\\" + folder
-        folder_files = os.listdir(path) # get all files in vm folder
+    with alive_bar(len(vm_folders)) as bar:
+        for folder in vm_folders:
+            path = config[0] + "\\" + folder
+            folder_files = os.listdir(path) # get all files in vm folder
+            bar() # update bar
 
-        # loop through files looking for vmx
-        for file in folder_files:
-            # is extension vmx?
-            file_split_ext = os.path.splitext(file)
-            if (file_split_ext[1] == ".vmx"):
-                vms.append(f"{config[0]}\\{folder}\\{file}") # add to array
-                print(f"Found virtual machine '{file}'") # status message
-                vm_names.append(file_split_ext[0])
+            # loop through files looking for vmx
+            for file in folder_files:
+                # is extension vmx?
+                file_split_ext = os.path.splitext(file)
+                if (file_split_ext[1] == ".vmx"):
+                    vms.append(f"{config[0]}\\{folder}\\{file}") # add to array
+                    #print(f"Found virtual machine '{file}'") # status message
+                    vm_names.append(file_split_ext[0])
 
 def get_vm_display_names():
     global vm_names
