@@ -1,9 +1,10 @@
-from pynput.keyboard import Key, Listener, Controller
+from pynput.keyboard import Key, KeyCode, Listener, Controller
 import os
 from time import sleep
 import os
 import math
 import win32gui
+from dadjokes import Dadjoke
 
 # config file layout
 # 0 - vm path
@@ -33,6 +34,8 @@ selected_vm = 0
 vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1
 scroll_buffer = 0
 scroll_pos = 0
+
+joke = ""
 
 action = ""
 manager_window = win32gui.GetForegroundWindow()
@@ -120,6 +123,7 @@ def draw():
     global scroll_pos
     global vm_display_count
     global selected_vm
+    global joke
 
     vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1 # refresh display count
 
@@ -131,11 +135,17 @@ def draw():
     print("VMManager v1.0.0 by ModMonster".center(width)) # info print
 
     if (len(vm_display_names) > 0):
-        # print newlines until halfway down
+        # get terminal size
         center_line = int(os.get_terminal_size().lines / 2 - 9)
 
+        # newlines and counter / joke
         print('\n'*math.ceil((center_line / 3) * 2))
-        print(f"{selected_vm + 1} / {len(vm_display_names)}".center(width))
+
+        if (joke == ""):
+            print(f"{selected_vm + 1} / {len(vm_display_names)}".center(width))
+        else:
+            print(joke.center(width))
+        
         print('\n'*math.floor(center_line / 3 - 1))
 
         # make array of boxes
@@ -214,6 +224,7 @@ def on_press(key):
     global vm_display_count
     global scroll_buffer
     global scroll_pos
+    global joke
 
     # ensure manager window is focused
     if (manager_window == win32gui.GetForegroundWindow()):
@@ -231,8 +242,9 @@ def on_press(key):
                 scroll_pos -= 1
                 scroll_buffer -= 1
 
-            draw()
+            joke = "" # reset joke
 
+            draw()
         elif (key == Key.right and len(vms) > 0):
             if (selected_vm < len(vms) - 1):
                 selected_vm += 1
@@ -247,8 +259,12 @@ def on_press(key):
                 scroll_pos += 1
                 scroll_buffer += 1
 
-            draw()
+            joke = "" # reset joke
 
+            draw()
+        elif (key == KeyCode.from_char("j")):
+            joke = Dadjoke().joke # random joke
+            draw()
         elif (key == Key.enter and len(vms) > 0):
             action = "start"
             return False
