@@ -7,6 +7,7 @@ import win32gui
 from dadjokes import Dadjoke
 import random
 from alive_progress import alive_bar
+import subprocess
 
 # config file layout
 # 0 - vm path
@@ -31,6 +32,7 @@ config = []
 vms = []
 vm_names = []
 vm_display_names = []
+running_vms = []
 
 selected_vm = 0
 vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1
@@ -82,6 +84,7 @@ def get_vms():
     global config
     global vms
     global vm_names
+    global running_vms
 
     # fullscreen + clear screen
     Controller().press(Key.f11)
@@ -109,6 +112,9 @@ def get_vms():
                     vms.append(f"{config[0]}\\{folder}\\{file}") # add to array
                     #print(f"Found virtual machine '{file}'") # status message
                     vm_names.append(file_split_ext[0])
+    
+    # get running vms
+    running_vms = subprocess.check_output(config[1] + "\\vmrun.exe -T ws list").splitlines()[1:]
 
 def get_vm_display_names():
     global vm_names
@@ -122,7 +128,9 @@ def get_vm_display_names():
 
 
 def draw():
+    global vm_names
     global vm_display_names
+    global running_vms
     global scroll_buffer
     global scroll_pos
     global vm_display_count
@@ -158,6 +166,12 @@ def draw():
         # crop it
         print_vms = vm_display_names[scroll_pos:vm_display_count + scroll_pos]
 
+        # get list of running vm names
+        running_vm_names = []
+
+        for vm in running_vms:
+            running_vm_names.append(str(vm).split("\\")[-1][:-5])
+
         # render it
         for vm in print_vms:
             if (vm_display_names.index(vm) == selected_vm):
@@ -168,7 +182,7 @@ def draw():
             {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
             {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
             {bcolors.OKCYAN}║ {vm} ║{bcolors.ENDC}
-            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
+            {bcolors.OKCYAN}║ {"    (Running)     " if vm_names[vm_display_names.index(vm)] in running_vm_names else "                  "} ║{bcolors.ENDC}
             {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
             {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
             {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
@@ -181,7 +195,7 @@ def draw():
             │                    │
             │                    │
             │ {vm} │
-            │                    │
+            │ {"    (Running)     " if vm_names[vm_display_names.index(vm)] in running_vm_names else "                  "} │
             │                    │
             │                    │
             │                    │
