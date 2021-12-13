@@ -121,7 +121,6 @@ def get_vms():
                     file_split_ext = os.path.splitext(file)
                     if (file_split_ext[1] == ".vmx"):
                         vms.append(f"{config[0]}\\{folder}\\{file}") # add to array
-                        #print(f"Found virtual machine '{file}'") # status message
                         vm_names.append(file_split_ext[0])
     
     # get running vms
@@ -218,8 +217,17 @@ def draw():
         for l in zip(*boxes_split):
             print(*l)
 
+        # print controls
+        print('\n'*math.floor(center_line / 3 - 3))
+
+        if (joke == ""):
+            print(f"← left    → right".center(width))
+        else:
+            print(joke.center(width))
+        
+        print('\n'*math.ceil((center_line / 3) * 2))
+
         # scroll bar
-        print("\n" * math.floor(center_line - 1))
 
         print_scroll_bar(selected_vm + 1, len(vms))
     else:
