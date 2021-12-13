@@ -24,6 +24,16 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+# settings functions
+def reset_config():
+    os.remove(os.path.dirname(__file__) + "\\vmmanager.cfg")
+    print("\nConfiguration file removed, restart VMManager to regenerate.")
+
+def exit_settings():
+    global settings_open
+    settings_open = False
+    draw()
+
 # vars
 
 config = []
@@ -36,6 +46,17 @@ selected_vm = 0
 vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1
 scroll_buffer = 0
 scroll_pos = 0
+
+settings_selection = 0
+settings_open = False
+settings_options = [
+    "Reset configuration",
+    "Exit",
+]
+settings_functions = [
+    reset_config,
+    exit_settings,
+]
 
 joke = ""
 
@@ -221,7 +242,7 @@ def draw():
         print('\n'*math.floor(center_line / 3 - 3))
 
         if (joke == ""):
-            print(f"← left    → right".center(width))
+            print(f"← left    → right    S settings".center(width))
         else:
             print(joke.center(width))
         
@@ -240,6 +261,34 @@ def draw():
         print(f"Press Escape to quit.".center(width))
 
         print('\n'*center_line)
+
+def draw_settings():
+    global settings_selection
+    global settings_options
+
+    os.system("cls")
+
+    width = os.get_terminal_size().columns # get terminal width
+    height = os.get_terminal_size().lines # get terminal height
+
+    print("")
+    print("Settings".center(width)) # info print
+    print("")
+
+    print("\n" * math.ceil(height / 2 - len(settings_options) - 3))
+
+    print("────────────────────────────────────────".center(width))
+
+    # draw options list
+    for option in settings_options:
+        if (settings_options.index(option) == settings_selection):
+            print(" " * (math.floor(width / 2) - 18) + "\033[47;30m" + "> " + option + "\033[m")
+        else:
+            print(" " * (math.floor(width / 2) - 18) + "  " + option)
+
+    print("────────────────────────────────────────".center(width))
+
+    print("\n" * math.floor(height / 2 - len(settings_options) - 3))
 
 def load_config():
     global config
@@ -262,53 +311,82 @@ def on_press(key):
     global scroll_buffer
     global scroll_pos
     global joke
+    global settings_open
+    global settings_options
+    global settings_selection
+    global settings_functions
 
     # ensure manager window is focused
     if (manager_window == win32gui.GetForegroundWindow()):
-        if (key == Key.left and len(vms) > 0):
-            if (selected_vm > 0):
-                selected_vm -= 1
-            else:
-                selected_vm = len(vms) - 1
-                scroll_buffer = -1
-                scroll_pos = len(vms) - vm_display_count
+        # in settings?
+        if (settings_open):
+            if (key == Key.up):
+                if (settings_selection > 0):
+                    settings_selection -= 1
+                else:
+                    settings_selection = len(settings_options) - 1
+                
+                draw_settings()
+            elif (key == Key.down):
+                if (settings_selection < len(settings_options) - 1):
+                    settings_selection += 1
+                else:
+                    settings_selection = 0
 
-            scroll_buffer += 1
-            # manage scrolling
-            if (scroll_buffer > vm_display_count - 1):
-                scroll_pos -= 1
-                scroll_buffer -= 1
+                draw_settings()
+            elif (key == Key.enter):
+                settings_functions[settings_selection]()
+            elif (key == KeyCode.from_char("s") or key == Key.esc):
+                settings_open = False
+                draw()
+        else:
+            if (key == Key.left and len(vms) > 0):
+                if (selected_vm > 0):
+                    selected_vm -= 1
+                else:
+                    selected_vm = len(vms) - 1
+                    scroll_buffer = -1
+                    scroll_pos = len(vms) - vm_display_count
 
-            joke = "" # reset joke
-
-            draw()
-        elif (key == Key.right and len(vms) > 0):
-            if (selected_vm < len(vms) - 1):
-                selected_vm += 1
-            else:
-                selected_vm = 0
-                scroll_buffer = vm_display_count
-                scroll_pos = 0
-
-            scroll_buffer -= 1
-            # manage scrolling
-            if (scroll_buffer < 0):
-                scroll_pos += 1
                 scroll_buffer += 1
+                # manage scrolling
+                if (scroll_buffer > vm_display_count - 1):
+                    scroll_pos -= 1
+                    scroll_buffer -= 1
 
-            joke = "" # reset joke
+                joke = "" # reset joke
 
-            draw()
-        elif (key == KeyCode.from_char("j")):
-            joke = Dadjoke().joke # random joke
-            draw()
-        elif (key == Key.enter and len(vms) > 0):
-            action = "start"
-            return False
-        elif (key == Key.esc):
-            action = "exit"
-            print("Quitting...")
-            return False
+                draw()
+            elif (key == Key.right and len(vms) > 0):
+                if (selected_vm < len(vms) - 1):
+                    selected_vm += 1
+                else:
+                    selected_vm = 0
+                    scroll_buffer = vm_display_count
+                    scroll_pos = 0
+
+                scroll_buffer -= 1
+                # manage scrolling
+                if (scroll_buffer < 0):
+                    scroll_pos += 1
+                    scroll_buffer += 1
+
+                joke = "" # reset joke
+
+                draw()
+            elif (key == KeyCode.from_char("j")):
+                joke = Dadjoke().joke # random joke
+                draw()
+            elif (key == KeyCode.from_char("s")):
+                settings_open = True
+                draw_settings()
+            elif (key == Key.enter and len(vms) > 0):
+                action = "start"
+                return False
+            elif (key == Key.esc):
+                action = "exit"
+                print("Quitting...")
+                return False
 
 def start_input():
     # start keyboard listener
