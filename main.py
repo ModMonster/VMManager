@@ -316,11 +316,11 @@ def draw():
 
         # print controls
         print('\n'*math.floor(center_line / 3 - 3))
-
-        if (joke == ""):
-            print(f"← left    → right    ESC exit    S settings".center(width))
+        
+        if (vm_names[selected_vm] in running_vm_names):
+            print(f"← left    → right    ↑ up    ↓ down    'ESC' exit    'ENTER' start    'S' settings".center(width))
         else:
-            print(joke.center(width))
+            print(f"← left    → right    'ESC' exit    'ENTER' start    'S' settings".center(width))
         
         print('\n'*math.ceil((center_line / 3) * 2 - 6))
 
