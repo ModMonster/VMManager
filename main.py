@@ -109,17 +109,20 @@ def get_vms():
     with alive_bar(len(vm_folders)) as bar:
         for folder in vm_folders:
             path = config[0] + "\\" + folder
-            folder_files = os.listdir(path) # get all files in vm folder
-            bar() # update bar
 
-            # loop through files looking for vmx
-            for file in folder_files:
-                # is extension vmx?
-                file_split_ext = os.path.splitext(file)
-                if (file_split_ext[1] == ".vmx"):
-                    vms.append(f"{config[0]}\\{folder}\\{file}") # add to array
-                    #print(f"Found virtual machine '{file}'") # status message
-                    vm_names.append(file_split_ext[0])
+            # make sure path is a folder
+            if (os.path.isdir(path)):
+                folder_files = os.listdir(path) # get all files in vm folder
+                bar() # update bar
+
+                # loop through files looking for vmx
+                for file in folder_files:
+                    # is extension vmx?
+                    file_split_ext = os.path.splitext(file)
+                    if (file_split_ext[1] == ".vmx"):
+                        vms.append(f"{config[0]}\\{folder}\\{file}") # add to array
+                        #print(f"Found virtual machine '{file}'") # status message
+                        vm_names.append(file_split_ext[0])
     
     # get running vms
     running_vms = subprocess.check_output(config[1] + "\\vmrun.exe -T ws list").splitlines()[1:]
