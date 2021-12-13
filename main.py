@@ -248,7 +248,7 @@ def draw():
 
         # render it
         for vm in print_vms:
-            if (vm_display_names.index(vm) == selected_vm):
+            if (vm_display_names.index(vm) == selected_vm and vm_names[vm_display_names.index(vm)] in running_vm_names):
                 vm_boxes.append(f"""
             {color}╔════════════════════╗{colors.ENDC}
             {color}║                    ║{colors.ENDC}
@@ -260,7 +260,32 @@ def draw():
             {color}║                    ║{colors.ENDC}
             {color}║                    ║{colors.ENDC}
             {color}║                    ║{colors.ENDC}
+            {color}╠════════════════════╣{colors.ENDC}
+            {color}║        Show        ║{colors.ENDC}
+            {color}║      Shutdown      ║{colors.ENDC}
+            {color}║       Reboot       ║{colors.ENDC}
+            {color}║      Suspend       ║{colors.ENDC}
+            {color}║   Force Shutdown   ║{colors.ENDC}
             {color}╚════════════════════╝{colors.ENDC}""")
+            elif (vm_display_names.index(vm) == selected_vm):
+                vm_boxes.append(f"""
+            {color}╔════════════════════╗{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║ {vm} ║{colors.ENDC}
+            {color}║ {"    (Running)     " if vm_names[vm_display_names.index(vm)] in running_vm_names else "                  "} ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}╚════════════════════╝{colors.ENDC}
+            {color}                      {colors.ENDC}
+            {color}                      {colors.ENDC}
+            {color}                      {colors.ENDC}
+            {color}                      {colors.ENDC}
+            {color}                      {colors.ENDC}
+            {color}                      {colors.ENDC}""")
             else:
                 vm_boxes.append(f"""
             ┌────────────────────┐
@@ -273,12 +298,16 @@ def draw():
             │                    │
             │                    │
             │                    │
-            └────────────────────┘""")
-
-        boxes_split = [box.splitlines() for box in vm_boxes]
+            └────────────────────┘
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  """)
 
         # print it
-        for l in zip(*boxes_split):
+        for l in zip(*[box.splitlines() for box in vm_boxes]):
             print(*l)
 
         # print controls
@@ -289,7 +318,7 @@ def draw():
         else:
             print(joke.center(width))
         
-        print('\n'*math.ceil((center_line / 3) * 2))
+        print('\n'*math.ceil((center_line / 3) * 2 - 6))
 
         # scroll bar
 
