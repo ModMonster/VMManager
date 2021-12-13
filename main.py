@@ -21,6 +21,7 @@ class colors:
     BLUE = '\033[34;40m'
     MAGENTA = '\033[35;40m'
     CYAN = '\033[36;40m'
+    SELOPTION = "\033[47;30m"
     ENDC = '\033[0m'
 
 color_names = [
@@ -85,6 +86,8 @@ settings_functions = [
     change_color,
     exit_settings,
 ]
+
+selected_option = 0
 
 joke = ""
 
@@ -210,6 +213,7 @@ def draw():
     global selected_vm
     global joke
     global color
+    global selected_option
 
     vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1 # refresh display count
 
@@ -261,11 +265,11 @@ def draw():
             {color}║                    ║{colors.ENDC}
             {color}║                    ║{colors.ENDC}
             {color}╠════════════════════╣{colors.ENDC}
-            {color}║        Show        ║{colors.ENDC}
-            {color}║      Shutdown      ║{colors.ENDC}
-            {color}║       Reboot       ║{colors.ENDC}
-            {color}║      Suspend       ║{colors.ENDC}
-            {color}║   Force Shutdown   ║{colors.ENDC}
+            {color}║ {colors.SELOPTION if selected_option == 0 else colors.ENDC}       Show       {color} ║{colors.ENDC}
+            {color}║ {colors.SELOPTION if selected_option == 1 else colors.ENDC}     Shutdown     {color} ║{colors.ENDC}
+            {color}║ {colors.SELOPTION if selected_option == 2 else colors.ENDC}      Reboot      {color} ║{colors.ENDC}
+            {color}║ {colors.SELOPTION if selected_option == 3 else colors.ENDC}     Suspend      {color} ║{colors.ENDC}
+            {color}║ {colors.SELOPTION if selected_option == 4 else colors.ENDC}  Force Shutdown  {color} ║{colors.ENDC}
             {color}╚════════════════════╝{colors.ENDC}""")
             elif (vm_display_names.index(vm) == selected_vm):
                 vm_boxes.append(f"""
@@ -361,7 +365,7 @@ def draw_settings():
     # draw options list
     for option in settings_options:
         if (settings_options.index(option) == settings_selection):
-            print(" " * (math.floor(width / 2) - 18) + "\033[47;30m" + "> " + option + "\033[m")
+            print(" " * (math.floor(width / 2) - 18) + colors.SELOPTION + "> " + option + colors.ENDC)
         else:
             print(" " * (math.floor(width / 2) - 18) + "  " + option)
 
