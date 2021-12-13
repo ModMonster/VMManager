@@ -10,19 +10,18 @@ import subprocess
 # config file layout
 # 0 - vm path
 # 1 - vmware path
+# 2 - selected vm color
 
 # colors
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
+class colors:
+    RED = '\033[31;40m'
+    GREEN = '\033[32;40m'
+    YELLOW = '\033[33;40m'
+    BLUE = '\033[34;40m'
+    MAGENTA = '\033[35;40m'
+    CYAN = '\033[36;40m'
     ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 # settings functions
 def reset_config():
@@ -46,6 +45,7 @@ selected_vm = 0
 vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1
 scroll_buffer = 0
 scroll_pos = 0
+color = colors.ENDC
 
 settings_selection = 0
 settings_open = False
@@ -105,7 +105,7 @@ def setup():
             print("Invalid directory, try again.")
 
     # write to file
-    config_file.write(vm_dir + "\n" + vmware_path)
+    config_file.write(vm_dir + "\n" + vmware_path + "\n" + "CYAN")
 
     config_file.close()
 
@@ -167,6 +167,7 @@ def draw():
     global vm_display_count
     global selected_vm
     global joke
+    global color
 
     vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1 # refresh display count
 
@@ -207,17 +208,17 @@ def draw():
         for vm in print_vms:
             if (vm_display_names.index(vm) == selected_vm):
                 vm_boxes.append(f"""
-            {bcolors.OKCYAN}╔════════════════════╗{bcolors.ENDC}
-            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-            {bcolors.OKCYAN}║ {vm} ║{bcolors.ENDC}
-            {bcolors.OKCYAN}║ {"    (Running)     " if vm_names[vm_display_names.index(vm)] in running_vm_names else "                  "} ║{bcolors.ENDC}
-            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-            {bcolors.OKCYAN}║                    ║{bcolors.ENDC}
-            {bcolors.OKCYAN}╚════════════════════╝{bcolors.ENDC}""")
+            {color}╔════════════════════╗{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║ {vm} ║{colors.ENDC}
+            {color}║ {"    (Running)     " if vm_names[vm_display_names.index(vm)] in running_vm_names else "                  "} ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}║                    ║{colors.ENDC}
+            {color}╚════════════════════╝{colors.ENDC}""")
             else:
                 vm_boxes.append(f"""
             ┌────────────────────┐
@@ -292,13 +293,28 @@ def draw_settings():
 
 def load_config():
     global config
+    global color
 
     config_file = open(os.path.dirname(__file__) + "\\vmmanager.cfg", "r")
     config = config_file.read().splitlines()
     config_file.close()
 
+    # set color
+    if (config[2] == "RED"):
+        color = colors.RED
+    elif (config[2] == "GREEN"):
+        color = colors.GREEN
+    elif (config[2] == "YELLOW"):
+        color = colors.YELLOW
+    elif (config[2] == "BLUE"):
+        color = colors.BLUE
+    elif (config[2] == "MAGENTA"):
+        color = colors.MAGENTA
+    elif (config[2] == "CYAN"):
+        color = colors.CYAN
+
 def validate_config():
-    if (len(config) != 2 or not os.path.isdir(config[0]) or not os.path.isdir(config[1])):
+    if (len(config) != 3 or not os.path.isdir(config[0]) or not os.path.isdir(config[1])):
         print("Invalid configuration file.")
         return True
     return False
