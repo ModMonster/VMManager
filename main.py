@@ -23,10 +23,40 @@ class colors:
     CYAN = '\033[36;40m'
     ENDC = '\033[0m'
 
+color_names = [
+    "RED",
+    "GREEN",
+    "YELLOW",
+    "BLUE",
+    "MAGENTA",
+    "CYAN"
+]
+
 # settings functions
 def reset_config():
     os.remove(os.path.dirname(__file__) + "\\vmmanager.cfg")
     print("\nConfiguration file removed, restart VMManager to regenerate.")
+
+def change_color():
+    global color_names
+    global config
+    global color
+
+    color_index = color_names.index(config[2])
+
+    print(color_index == len(color_names))
+
+    if (color_index == len(color_names) - 1):
+        color_index = 0
+    else:
+        color_index += 1
+
+    write_config(2, color_names[color_index])
+
+    load_config()
+    get_colors()
+
+    draw_settings()
 
 def exit_settings():
     global settings_open
@@ -49,12 +79,10 @@ color = colors.ENDC
 
 settings_selection = 0
 settings_open = False
-settings_options = [
-    "Reset configuration",
-    "Exit",
-]
+settings_options = []
 settings_functions = [
     reset_config,
+    change_color,
     exit_settings,
 ]
 
@@ -70,6 +98,16 @@ def print_scroll_bar(progress, total):
     size_r = (os.get_terminal_size().columns - size_l) - 11
 
     print("- " * math.floor(size_l / 2) + "██████████" + "- " * math.floor(size_r / 2))
+
+def write_config(line, option):
+    config_file = open(os.path.dirname(__file__) + "\\vmmanager.cfg", "r")
+    config_lines = config_file.readlines()
+
+    config_lines[line] = option
+
+    config_file = open(os.path.dirname(__file__) + "\\vmmanager.cfg", "w")
+    config_file.writelines(config_lines)
+    config_file.close()
 
 def setup():
     config_file = open(os.path.dirname(__file__) + "\\vmmanager.cfg", "w")
@@ -266,6 +304,13 @@ def draw():
 def draw_settings():
     global settings_selection
     global settings_options
+    global config
+
+    settings_options = [
+        "Reset configuration",
+        f"Change color ({config[2]})",
+        "Exit",
+    ]
 
     os.system("cls")
 
@@ -298,20 +343,6 @@ def load_config():
     config_file = open(os.path.dirname(__file__) + "\\vmmanager.cfg", "r")
     config = config_file.read().splitlines()
     config_file.close()
-
-    # set color
-    if (config[2] == "RED"):
-        color = colors.RED
-    elif (config[2] == "GREEN"):
-        color = colors.GREEN
-    elif (config[2] == "YELLOW"):
-        color = colors.YELLOW
-    elif (config[2] == "BLUE"):
-        color = colors.BLUE
-    elif (config[2] == "MAGENTA"):
-        color = colors.MAGENTA
-    elif (config[2] == "CYAN"):
-        color = colors.CYAN
 
 def validate_config():
     if (len(config) != 3 or not os.path.isdir(config[0]) or not os.path.isdir(config[1])):
@@ -414,6 +445,24 @@ def start_vm():
     print(f"Starting Virtual Machine '{vm_names[selected_vm]}'...")
     os.system(f'start {config[1]}\\vmware-kvm.exe "{vms[selected_vm]}"')
 
+def get_colors():
+    global color
+    global config
+
+    # set color
+    if (config[2] == "RED"):
+        color = colors.RED
+    elif (config[2] == "GREEN"):
+        color = colors.GREEN
+    elif (config[2] == "YELLOW"):
+        color = colors.YELLOW
+    elif (config[2] == "BLUE"):
+        color = colors.BLUE
+    elif (config[2] == "MAGENTA"):
+        color = colors.MAGENTA
+    elif (config[2] == "CYAN"):
+        color = colors.CYAN
+
 # start of actual code
 
 # initial setup
@@ -428,6 +477,7 @@ while validate_config():
     load_config()
 
 get_vms() # get list of vms from config file
+get_colors() # set primary color
 
 if (len(vms) > 0):
     get_vm_display_names() # get display names by adding spaces / cutting off end of vm names
