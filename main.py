@@ -130,7 +130,7 @@ def setup():
     # vmware path
     vmware_path = ""
 
-    while (not os.path.isdir(vmware_path)):
+    while (not os.path.isdir(vmware_path) or not os.path.isfile(vmware_path + "\\vmrun.exe") or not os.path.isfile(vmware_path + "\\vmware-kvm.exe")):
         print("Type the path to your VMWare directory.")
         vmware_path = input("> ")
 
@@ -141,6 +141,10 @@ def setup():
         # make sure directory is valid
         if (not os.path.isdir(vmware_path)):
             print("Invalid directory, try again.")
+            
+        # make sure directory contains needed files
+        if (not os.path.isfile(vmware_path + "\\vmrun.exe") or not os.path.isfile(vmware_path + "\\vmware-kvm.exe")):
+            print("Directory is valid, but doesn't contain a valid VMWare installation.")
 
     # write to file
     config_file.write(vm_dir + "\n" + vmware_path + "\n" + "CYAN")
