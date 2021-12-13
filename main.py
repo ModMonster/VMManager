@@ -59,7 +59,12 @@ def setup():
     while (not os.path.isdir(vm_dir)):
         print("Type the path to your VMs directory.")
         vm_dir = input("> ")
-
+        
+        # set default path if blank
+        if (vm_dir == ""):
+            vm_dir = os.path.expanduser("~\\Documents\\Virtual Machines\\")
+        
+        # make sure directory is valid
         if (not os.path.isdir(vm_dir)):
             print("Invalid directory, try again.")
     
@@ -70,6 +75,11 @@ def setup():
         print("Type the path to your VMWare directory.")
         vmware_path = input("> ")
 
+        # set default path if blank
+        if (vmware_path == ""):
+            vmware_path = "C:\\Program Files (x86)\\VMware\\VMware Player"
+
+        # make sure directory is valid
         if (not os.path.isdir(vmware_path)):
             print("Invalid directory, try again.")
 
