@@ -400,6 +400,7 @@ def on_press(key):
     global settings_selection
     global settings_functions
     global selected_option
+    global running_vm_names
 
     # ensure manager window is focused
     if (manager_window == win32gui.GetForegroundWindow()):
@@ -460,23 +461,25 @@ def on_press(key):
 
                 draw()
             elif (key == Key.up):
-                if (selected_option > 0):
-                    selected_option -= 1
-                else:
-                    selected_option = 4
+                if (vm_names[selected_vm] in running_vm_names):
+                    if (selected_option > 0):
+                        selected_option -= 1
+                    else:
+                        selected_option = 4
 
-                joke = "" # reset joke
+                    joke = "" # reset joke
 
-                draw()
+                    draw()
             elif (key == Key.down):
-                if (selected_option < 4):
-                    selected_option += 1
-                else:
-                    selected_option = 0
+                if (vm_names[selected_vm] in running_vm_names):
+                    if (selected_option < 4):
+                        selected_option += 1
+                    else:
+                        selected_option = 0
 
-                joke = "" # reset joke
+                    joke = "" # reset joke
 
-                draw()
+                    draw()
             elif (key == KeyCode.from_char("j")):
                 joke = Dadjoke().joke # random joke
                 draw()
