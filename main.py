@@ -399,6 +399,7 @@ def on_press(key):
     global settings_options
     global settings_selection
     global settings_functions
+    global selected_option
 
     # ensure manager window is focused
     if (manager_window == win32gui.GetForegroundWindow()):
@@ -458,11 +459,30 @@ def on_press(key):
                 joke = "" # reset joke
 
                 draw()
+            elif (key == Key.up):
+                if (selected_option > 0):
+                    selected_option -= 1
+                else:
+                    selected_option = 4
+
+                joke = "" # reset joke
+
+                draw()
+            elif (key == Key.down):
+                if (selected_option < 4):
+                    selected_option += 1
+                else:
+                    selected_option = 0
+
+                joke = "" # reset joke
+
+                draw()
             elif (key == KeyCode.from_char("j")):
                 joke = Dadjoke().joke # random joke
                 draw()
             elif (key == KeyCode.from_char("s")):
                 settings_open = True
+                joke = "" # reset joke
                 draw_settings()
             elif (key == Key.enter and len(vms) > 0):
                 action = "start"
