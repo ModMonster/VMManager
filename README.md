@@ -26,7 +26,8 @@ On the first launch, you will be prompted to specify your virtual machine direct
 
 ## Screenshots
 
-![Main Screenshot](https://raw.githubusercontent.com/ModMonster/VMManager/master/main.png)
+![Main Screenshot](https://raw.githubusercontent.com/ModMonster/VMManager/master/images/main.png)
+![Settings Page Screenshot](https://raw.githubusercontent.com/ModMonster/VMManager/master/images/settings.png)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
