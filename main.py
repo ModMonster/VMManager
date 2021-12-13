@@ -71,6 +71,7 @@ vms = []
 vm_names = []
 vm_display_names = []
 running_vms = []
+running_vm_names = []
 
 selected_vm = 0
 vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1
@@ -214,6 +215,7 @@ def draw():
     global joke
     global color
     global selected_option
+    global running_vm_names
 
     vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1 # refresh display count
 
@@ -245,8 +247,6 @@ def draw():
         print_vms = vm_display_names[scroll_pos:vm_display_count + scroll_pos]
 
         # get list of running vm names
-        running_vm_names = []
-
         for vm in running_vms:
             running_vm_names.append(str(vm).split("\\")[-1][:-5])
 
@@ -499,8 +499,29 @@ def start_input():
     listener.start()
 
 def start_vm():
-    print(f"Starting Virtual Machine '{vm_names[selected_vm]}'...")
-    os.system(f'start {config[1]}\\vmware-kvm.exe "{vms[selected_vm]}"')
+    global running_vm_names
+    global selected_option
+
+    # check running vm options
+    if (vm_names[selected_vm] in running_vm_names):
+        if (selected_option == 0):
+            print(f"Showing virtual machine '{vm_names[selected_vm]}'...")
+            os.system(f'start {config[1]}\\vmware-kvm.exe "{vms[selected_vm]}"')
+        elif (selected_option == 1):
+            print(f"Shutting down virtual machine '{vm_names[selected_vm]}'...")
+            os.system(f'start {config[1]}\\vmware-kvm.exe --power-off "{vms[selected_vm]}"')
+        elif (selected_option == 2):
+            print(f"Rebooting virtual machine '{vm_names[selected_vm]}'...")
+            os.system(f'start {config[1]}\\vmware-kvm.exe --reset "{vms[selected_vm]}"')
+        elif (selected_option == 3):
+            print(f"Suspending virtual machine '{vm_names[selected_vm]}'...")
+            os.system(f'start {config[1]}\\vmware-kvm.exe --suspend "{vms[selected_vm]}"')
+        elif (selected_option == 4):
+            print(f"Forcing virtual machine '{vm_names[selected_vm]}' to shut down...")
+            os.system(f'start {config[1]}\\vmware-kvm.exe --power-off=hard "{vms[selected_vm]}"')
+    else:
+        print(f"Starting virtual machine '{vm_names[selected_vm]}'...")
+        os.system(f'start {config[1]}\\vmware-kvm.exe "{vms[selected_vm]}"')
 
 def get_colors():
     global color
