@@ -285,7 +285,7 @@ def draw():
         print('\n'*math.floor(center_line / 3 - 3))
 
         if (joke == ""):
-            print(f"← left    → right    S settings".center(width))
+            print(f"← left    → right    ESC exit    S settings".center(width))
         else:
             print(joke.center(width))
         
