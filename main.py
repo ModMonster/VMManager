@@ -259,6 +259,7 @@ def draw():
     global color
     global selected_option
     global running_vm_names
+    global favourite_vms
 
     vm_display_count = math.floor(os.get_terminal_size().columns / 29) - 1 # refresh display count
 
@@ -298,7 +299,7 @@ def draw():
             if (vm_display_names.index(vm) == selected_vm and vm_names[vm_display_names.index(vm)] in running_vm_names):
                 vm_boxes.append(f"""
             {color}╔════════════════════╗{colors.ENDC}
-            {color}║                    ║{colors.ENDC}
+            {color}║                  {"*" if vms[vm_display_names.index(vm)] in favourite_vms else " "} ║{colors.ENDC}
             {color}║                    ║{colors.ENDC}
             {color}║                    ║{colors.ENDC}
             {color}║                    ║{colors.ENDC}
@@ -317,7 +318,7 @@ def draw():
             elif (vm_display_names.index(vm) == selected_vm):
                 vm_boxes.append(f"""
             {color}╔════════════════════╗{colors.ENDC}
-            {color}║                    ║{colors.ENDC}
+            {color}║                  {"*" if vms[vm_display_names.index(vm)] in favourite_vms else " "} ║{colors.ENDC}
             {color}║                    ║{colors.ENDC}
             {color}║                    ║{colors.ENDC}
             {color}║                    ║{colors.ENDC}
@@ -336,7 +337,7 @@ def draw():
             else:
                 vm_boxes.append(f"""
             ┌────────────────────┐
-            │                    │
+            │                  {"*" if vms[vm_display_names.index(vm)] in favourite_vms else " "} │
             │                    │
             │                    │
             │                    │
