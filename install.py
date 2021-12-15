@@ -4,11 +4,10 @@ import sys
 import itertools
 import time
 import threading
-import importlib
 
 # program
 program = r'''Code to install'''
-version = "1.0.0"
+version = "1.1.0"
 
 # vars
 

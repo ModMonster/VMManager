@@ -361,7 +361,7 @@ def draw():
         # print controls
         print('\n'*math.floor(center_line / 3 - 3))
 
-        print(f"← left    → right{'    ↑ up    ↓ down' if vm_names[selected_vm] in running_vm_names else ''}    'ESC' exit    'ENTER' start    {''''SPACE' unfavourite''' if vms[selected_vm] in favourite_vms else ''''SPACE' favourite'''}    'S' settings".center(width))
+        print(f"""← left    → right{"    ↑ up    ↓ down" if vm_names[selected_vm] in running_vm_names else ""}    'ESC' exit    'ENTER' start    {"'SPACE' unfavourite" if vms[selected_vm] in favourite_vms else "'SPACE' favourite"}    'S' settings""".center(width))
         
         print('\n'*math.ceil((center_line / 3) * 2 - 6))
 
