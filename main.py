@@ -593,6 +593,10 @@ def get_colors():
 if (not os.path.isfile(os.path.dirname(__file__) + "\\vmmanager.cfg")):
     setup()
 
+# make favourite file
+if (not os.path.isfile(os.path.dirname(__file__) + "\\favourites.cfg")):
+    open(os.path.dirname(__file__) + "\\favourites.cfg", "w").close()
+
 load_config() # load config file and store in list
 
 # validate config file
