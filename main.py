@@ -36,7 +36,8 @@ color_names = [
 # settings functions
 def reset_config():
     os.remove(os.path.dirname(__file__) + "\\vmmanager.cfg")
-    print("\nConfiguration file removed, restart VMManager to regenerate.")
+    os.remove(os.path.dirname(__file__) + "\\favourites.cfg")
+    print("\nConfiguration files removed, restart VMManager to regenerate.")
 
 def change_color():
     global color_names
@@ -70,6 +71,7 @@ config = []
 vms = []
 vm_names = []
 vm_display_names = []
+favourite_vms = []
 running_vms = []
 running_vm_names = []
 
@@ -154,6 +156,23 @@ def setup():
     config_file.write(vm_dir + "\n" + vmware_path + "\n" + "CYAN")
 
     config_file.close()
+
+def get_favourites():
+    global favourite_vms
+    global vm_names
+    global config
+    
+    # read favourites file
+    favourites_file = open(os.path.dirname(__file__) + "\\favourites.cfg", "r")
+    favourite_vms = favourites_file.read().splitlines()
+    favourites_file.close()
+
+    # sort vms as favourite
+    for vm in favourite_vms:
+        vms.remove(vm)
+        vms.insert(0, vm)
+        vm_names.remove(os.path.splitext(vm.split("\\")[-1])[0])
+        vm_names.insert(0, os.path.splitext(vm.split("\\")[-1])[0])
 
 def get_vms():
     global config
@@ -558,6 +577,7 @@ while validate_config():
     load_config()
 
 get_vms() # get list of vms from config file
+get_favourites() # get list of favourite vms from favourite file
 get_colors() # set primary color
 
 if (len(vms) > 0):
