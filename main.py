@@ -76,7 +76,7 @@ running_vms = []
 running_vm_names = []
 
 selected_vm = 0
-vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1
+vm_display_count = math.floor(os.get_terminal_size().columns / 29) - 1
 scroll_buffer = 0
 scroll_pos = 0
 color = colors.ENDC
@@ -160,7 +160,6 @@ def setup():
 def get_favourites():
     global favourite_vms
     global vm_names
-    global config
     
     # read favourites file
     favourites_file = open(os.path.dirname(__file__) + "\\favourites.cfg", "r")
@@ -174,14 +173,39 @@ def get_favourites():
         vm_names.remove(os.path.splitext(vm.split("\\")[-1])[0])
         vm_names.insert(0, os.path.splitext(vm.split("\\")[-1])[0])
 
+def favourite_vm(vm):
+    global favourite_vms
+    global vms
+    global vm_display_names
+    global vm_names
+    global favourite_vms
+
+    if (vm in favourite_vms):
+        favourite_vms.remove(vm) # remove from list
+    else:
+        favourite_vms.append(vm) # add to list
+
+    favourites_file = open(os.path.dirname(__file__) + "\\favourites.cfg", "w")
+    favourites_file.write("\n".join(favourite_vms))
+    favourites_file.close()
+
+    vms = []
+    vm_display_names = []
+    vm_names = []
+    favourite_vms = []
+
+    get_vms()
+    get_favourites()
+    get_vm_display_names()
+    draw()
+
 def get_vms():
     global config
     global vms
     global vm_names
     global running_vms
 
-    # fullscreen + clear screen
-    Controller().press(Key.f11)
+    # clear screen
     os.system("cls")
 
     # status message
@@ -236,7 +260,7 @@ def draw():
     global selected_option
     global running_vm_names
 
-    vm_display_count = math.floor(os.get_terminal_size().columns / 28) - 1 # refresh display count
+    vm_display_count = math.floor(os.get_terminal_size().columns / 29) - 1 # refresh display count
 
     os.system("cls")
 
@@ -335,11 +359,8 @@ def draw():
 
         # print controls
         print('\n'*math.floor(center_line / 3 - 3))
-        
-        if (vm_names[selected_vm] in running_vm_names):
-            print(f"← left    → right    ↑ up    ↓ down    'ESC' exit    'ENTER' start    'S' settings".center(width))
-        else:
-            print(f"← left    → right    'ESC' exit    'ENTER' start    'S' settings".center(width))
+
+        print(f"← left    → right{'    ↑ up    ↓ down' if vm_names[selected_vm] in running_vm_names else ''}    'ESC' exit    'ENTER' start    {''''SPACE' unfavourite''' if vms[selected_vm] in favourite_vms else ''''SPACE' favourite'''}    'S' settings".center(width))
         
         print('\n'*math.ceil((center_line / 3) * 2 - 6))
 
@@ -499,6 +520,8 @@ def on_press(key):
                     joke = "" # reset joke
 
                     draw()
+            elif (key == Key.space):
+                favourite_vm(vms[selected_vm])
             elif (key == KeyCode.from_char("j")):
                 joke = Dadjoke().joke # random joke
                 draw()
@@ -576,6 +599,7 @@ while validate_config():
     setup()
     load_config()
 
+Controller().press(Key.f11) # fullscreen
 get_vms() # get list of vms from config file
 get_favourites() # get list of favourite vms from favourite file
 get_colors() # set primary color
